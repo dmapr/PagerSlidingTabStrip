@@ -110,12 +110,13 @@ public class QuickContactFragment extends DialogFragment {
 		private View createBackground(final int position) {
 
 			final Resources resources = getActivity().getResources();
-			final float[] defaultHsv = { 360.0f * random.nextFloat(), 1.0f, 1.0f };
-			final int highlightColor = resources.getColor(R.color.background_tab_pressed);
+			final int selectedColor = Color.HSVToColor(new float[] { 360.0f * random.nextFloat(), 1.0f, 1.0f });
+			final int highlightColor = Color.HSVToColor(new float[] { 360.0f * random.nextFloat(), 1.0f, 1.0f });
 
 			final StateListDrawable stateListDrawable = new StateListDrawable();
-			stateListDrawable.addState(new int[] { android.R.attr.state_pressed, android.R.attr.state_focused }, new ColorDrawable(highlightColor));
-			stateListDrawable.addState(new int[] { android.R.attr.state_selected }, new ColorDrawable(Color.HSVToColor(defaultHsv)));
+			stateListDrawable.addState(new int[] { android.R.attr.state_pressed }, new ColorDrawable(highlightColor));
+			stateListDrawable.addState(new int[] { android.R.attr.state_focused }, new ColorDrawable(highlightColor));
+			stateListDrawable.addState(new int[] { android.R.attr.state_selected }, new ColorDrawable(selectedColor));
 			stateListDrawable.addState(StateSet.WILD_CARD, new ColorDrawable(Color.TRANSPARENT));
 
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
