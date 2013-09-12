@@ -36,6 +36,7 @@ import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
@@ -266,6 +267,24 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
 
 		if ((title == null || title.length() == 0) && customView == null) {
 			throw new IllegalStateException("PagerSlidingTabStrip requires that tabs have either a (non-zero length) title, a custom view, or both.");
+		}
+
+		if (customView != null) {
+			final ViewParent customViewParent = customView.getParent();
+
+			if (customViewParent instanceof ViewGroup) {
+				final ViewGroup viewGroup = (ViewGroup) customViewParent;
+				viewGroup.removeView(customView);
+			}
+		}
+
+		if (backgroundView != null) {
+			final ViewParent backgroundViewParent = backgroundView.getParent();
+
+			if (backgroundViewParent instanceof ViewGroup) {
+				final ViewGroup viewGroup = (ViewGroup) backgroundViewParent;
+				viewGroup.removeView(backgroundView);
+			}
 		}
 
 		final TabLayout tabLayout = new TabLayout(getContext());
