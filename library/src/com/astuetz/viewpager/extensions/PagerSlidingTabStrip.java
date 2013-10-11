@@ -24,6 +24,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Parcel;
@@ -92,6 +93,8 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
 	private int dividerPadding = 12;
 	private int tabPadding = 24;
 	private int dividerWidth = 1;
+
+	private boolean backgroundDividerDrawn;
 
 	private int tabTextSize = 12;
 	private int tabTextColor = 0xFF666666;
@@ -414,8 +417,13 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
 
 		// draw divider
 
+		final Rect clipBounds = canvas.getClipBounds();
+
 		dividerPaint.setColor(dividerColor);
-		for (int i = 0; i < tabCount - 1; i++) {
+
+		final int tabDividerCount = (backgroundDividerDrawn) ? tabCount : tabCount - 1;
+
+		for (int i = 0; i < tabDividerCount; i++) {
 			View tab = tabsContainer.getChildAt(i);
 			canvas.drawLine(tab.getRight(), dividerPadding, tab.getRight(), height - dividerPadding, dividerPaint);
 		}
@@ -682,6 +690,14 @@ public class PagerSlidingTabStrip extends HorizontalScrollView {
 
 	public int getDividerColor() {
 		return dividerColor;
+	}
+
+	public void setBackgroundDividerDrawn(final boolean backgroundDividerDrawn) {
+		this.backgroundDividerDrawn = backgroundDividerDrawn;
+	}
+
+	public boolean isBackgroundDividerDrawn() {
+		return backgroundDividerDrawn;
 	}
 
 	public void setUnderlineHeight(int underlineHeightPx) {
