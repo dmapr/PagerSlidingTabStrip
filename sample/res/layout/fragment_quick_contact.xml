@@ -30,10 +30,11 @@
         android:layout_height="62dip"
         android:layout_below="@+id/image"
         android:background="@drawable/background_tabs_diagonal"
-        app:dividerColor="#00000000"
-        app:indicatorColor="#FF33B5E6"
-        app:tabPaddingLeftRight="14dip"
-        app:underlineColor="#FF33B5E6" />
+        app:pstDividerColor="#00000000"
+        app:pstIndicatorColor="#FF33B5E6"
+        app:pstTabPaddingLeftRight="14dip"
+        app:pstUnderlineColor="#FF33B5E6"
+        app:pstTabBackground="@android:color/transparent" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"

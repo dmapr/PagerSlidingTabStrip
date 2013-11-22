@@ -1,11 +1,17 @@
 package com.astuetz.viewpager.extensions.sample;
 
+import android.annotation.SuppressLint;
+import android.content.res.Resources;
+import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.StateListDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.StateSet;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.Gravity;
@@ -13,10 +19,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.astuetz.viewpager.extensions.PagerSlidingTabStrip;
-import com.astuetz.viewpager.extensions.PagerSlidingTabStrip.IconTabProvider;
+
+import java.util.Random;
 
 public class QuickContactFragment extends DialogFragment {
 
@@ -80,13 +88,60 @@ public class QuickContactFragment extends DialogFragment {
 		}
 	}
 
-	public class ContactPagerAdapter extends PagerAdapter implements IconTabProvider {
+	public class ContactPagerAdapter extends PagerAdapter implements PagerSlidingTabStrip.TabBackgroundProvider, PagerSlidingTabStrip.TabCustomViewProvider {
 
 		private final int[] ICONS = { R.drawable.ic_launcher_gplus, R.drawable.ic_launcher_gmail,
 				R.drawable.ic_launcher_gmaps, R.drawable.ic_launcher_chrome };
 
+		private final View[] customViews = new View[ICONS.length];
+		private final View[] backgroundViews = new View[ICONS.length];
+		private final Random random = new Random();
+
+		private ImageView createImageView(final int position) {
+
+			final ImageView imageView = new ImageView(getActivity());
+			imageView.setImageResource(ICONS[position]);
+			imageView.setScaleType(ImageView.ScaleType.CENTER);
+			return imageView;
+		}
+
+		@SuppressWarnings("deprecation")
+		@SuppressLint("NewApi")
+		private View createBackground(final int position) {
+
+			final Resources resources = getActivity().getResources();
+			final int selectedColor = Color.HSVToColor(new float[] { 360.0f * random.nextFloat(), 1.0f, 1.0f });
+			final int highlightColor = Color.HSVToColor(new float[] { 360.0f * random.nextFloat(), 1.0f, 1.0f });
+
+			final StateListDrawable stateListDrawable = new StateListDrawable();
+			stateListDrawable.addState(new int[] { android.R.attr.state_pressed }, new ColorDrawable(highlightColor));
+			stateListDrawable.addState(new int[] { android.R.attr.state_focused }, new ColorDrawable(highlightColor));
+			stateListDrawable.addState(new int[] { android.R.attr.state_selected }, new ColorDrawable(selectedColor));
+			stateListDrawable.addState(StateSet.WILD_CARD, new ColorDrawable(Color.TRANSPARENT));
+
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+				stateListDrawable.setExitFadeDuration(resources.getInteger(android.R.integer.config_shortAnimTime));
+			}
+
+			final View view = new View(getActivity());
+			view.setDuplicateParentStateEnabled(true);
+
+			if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
+				view.setBackgroundDrawable(stateListDrawable);
+			} else {
+				view.setBackground(stateListDrawable);
+			}
+
+			return view;
+		}
+
 		public ContactPagerAdapter() {
 			super();
+
+			for (int i = 0; i < ICONS.length; i++) {
+				customViews[i] = createImageView(i);
+				backgroundViews[i] = createBackground(i);
+			}
 		}
 
 		@Override
@@ -95,8 +150,13 @@ public class QuickContactFragment extends DialogFragment {
 		}
 
 		@Override
-		public int getPageIconResId(int position) {
-			return ICONS[position];
+		public View getPageTabBackground(final int position) {
+			return backgroundViews[position];
+		}
+
+		@Override
+		public View getPageTabCustomView(final int position) {
+			return customViews[position];
 		}
 
 		@Override
